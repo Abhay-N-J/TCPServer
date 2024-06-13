@@ -1,3 +1,5 @@
+#pragma once
+
 #include <iostream>
 #include <thread>
 #include <mutex>
@@ -9,14 +11,16 @@
 class Threadpool {
     private:
         std::vector<std::thread> _threads;
-        std::queue<std::function<void>> _jobs;
+        std::queue<std::function<void()>> _jobs;
         std::mutex _queue_mutex;
         std::condition_variable _thread_cv;
+        bool stop;
 
         void workerThread();
 
     public:
-        Threadpool(size_t numThreads = std::thread::hardware_concurrency());
+        Threadpool();
+        Threadpool(size_t);
         ~Threadpool();
-        void addJob(std::function<void>);
+        void addJob(std::function<void()>);
 };

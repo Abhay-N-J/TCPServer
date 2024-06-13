@@ -58,7 +58,7 @@ int main(int argc, char ** argv) {
 	std::signal(SIGINT, signalHandlerWrapper);
 	std::signal(SIGTERM, signalHandlerWrapper);
 
-	main_loop(server_fd);
+	main_loop(server_fd, conn);
 	
     cleanup(server_fd);
 }

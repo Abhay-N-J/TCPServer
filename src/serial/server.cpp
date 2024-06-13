@@ -31,7 +31,7 @@ std::string read_msg(int sock, DataStore *dataObj, bool *toClose, Reader *reader
     return "";
 }
 
-std::string write_msg(DataStore *dataObj, bool *toClose, Reader *reader) {
+std::string write_msg(int sock, DataStore *dataObj, bool *toClose, Reader *reader) {
 	std::cout << "Writing...\n";
 	std::string key = reader->next();
 	if (key == "END" || key == "Closed" || key == "ERR") { 
@@ -39,10 +39,14 @@ std::string write_msg(DataStore *dataObj, bool *toClose, Reader *reader) {
 		return key;
 	}
     std::string value = reader->next();
-	if (value == "END" || value[0] != ':' || value == "Closed" || value == "ERR") {
+	if (value == "END" || value == "Closed" || value == "ERR") {
 		*toClose = true;
 		return value;
 	}
+    if (value[0] != ':') {
+        send(sock, "Unknown command", 18, 0);
+        return "";
+    }
 	value = value.substr(1, value.length() - 1);
 	dataObj->setValue(key, value);
     return "";
@@ -95,7 +99,7 @@ int init_server(int port_no) {
         close(server_fd);
         exit(EXIT_FAILURE);
     }
-    
+
     // Binding the socket to the address and port
     address.sin_family = AF_INET;
     address.sin_addr.s_addr = INADDR_ANY;
@@ -148,13 +152,14 @@ void main_loop(int server_fd) {
 		else if (input == "READ")
 			input = read_msg(new_socket, instance, &toClose, reader);
 		else if (input == "WRITE")
-			input = write_msg(instance, &toClose, reader);
+			input = write_msg(new_socket, instance, &toClose, reader);
 		else if (input == "COUNT")
 			count_msg(new_socket, instance, &toClose, reader);
 		else if (input == "DELETE")
 			input = delete_msg(new_socket, instance, &toClose, reader);
         else {
             std::cout << "Unknown command: " << input << std::endl;
+            send(new_socket, "Unknown command", 18, 0);
         }
 		// Closing the connection
 		if (toClose) {

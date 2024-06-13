@@ -19,9 +19,9 @@ class Reader {
 void cleanup(int);
 std::string trim(std::string);
 std::string read_msg(int, DataStore*, bool*, Reader*);
-std::string write_msg(DataStore*, bool*, Reader*);
+std::string write_msg(int, DataStore*, bool*, Reader*);
 void count_msg(int, DataStore*, bool*, Reader*);
 std::string delete_msg(int, DataStore*, bool*, Reader*);
 int init_server(int);
-void main_loop(int);
+void main_loop(int, int);
 
