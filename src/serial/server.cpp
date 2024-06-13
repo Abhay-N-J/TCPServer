@@ -119,7 +119,6 @@ void main_loop(int server_fd) {
 		}
 
         std::string input = reader->next();
-        std::cout << "Received input: \"" << input << "\"" << std::endl;
         if (input == "END" || input == "ERR" || input == "Closed") {
             std::cout << "Client disconnected\n";
             toClose = true;
@@ -174,7 +173,6 @@ std::string Reader::trim(const std::string& str) {
 }
 
 std::string Reader::next() {
-    std::cout << "Recieving data..." << '\n';
     if (!list.empty()) {
         std::string next_input = list.front();
         list.pop();
