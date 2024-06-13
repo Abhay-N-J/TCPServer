@@ -1,5 +1,6 @@
 {
     "files.associations": {
+        "*.rs": "rust",
         "chrono": "cpp",
         "random": "cpp",
         "limits": "cpp",
@@ -67,6 +68,15 @@
         "cfenv": "cpp",
         "typeindex": "cpp",
         "variant": "cpp",
-        "*.ipp": "cpp"
+        "*.ipp": "cpp",
+        "any": "cpp",
+        "charconv": "cpp",
+        "csignal": "cpp",
+        "format": "cpp",
+        "numbers": "cpp",
+        "semaphore": "cpp",
+        "span": "cpp",
+        "stop_token": "cpp",
+        "text_encoding": "cpp"
     }
 }
