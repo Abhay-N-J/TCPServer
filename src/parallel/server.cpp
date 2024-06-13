@@ -11,9 +11,8 @@
 
 #define BUFFER_SIZE 1024
 
-void cleanup(int server_fd) {
+void cleanup(int signum) {
 	DataStore::deleteInstance();
-    close(server_fd);
 	std::cout << "Stopped Server\n";
 	exit(0);
 }
@@ -70,32 +69,13 @@ int init_server(int port_no) {
 	int server_fd, new_socket;
     struct sockaddr_in address;
     int addrlen = sizeof(address);
-    struct timeval tv;
-    int opt = 1;
+
     // Creating socket file descriptor
     if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0) {
         fprintf(stderr, "Socket initialization error\n");
 		exit(1);
     }
 
-    tv.tv_sec = 20;
-    tv.tv_usec = 0;
-    if (setsockopt(server_fd, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv)) < 0) {
-        std::cerr << "Error setting receive timeout: " << strerror(errno) << std::endl;
-        close(server_fd);
-        return 1;
-    }
-    if (setsockopt(server_fd, SOL_SOCKET, SO_SNDTIMEO, &tv, sizeof(tv)) < 0) {
-        std::cerr << "Error setting send timeout: " << strerror(errno) << std::endl;
-        close(server_fd);
-        return 1;
-    }
-    if (setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt))) {
-        perror("setsockopt");
-        close(server_fd);
-        exit(EXIT_FAILURE);
-    }
-    
     // Binding the socket to the address and port
     address.sin_family = AF_INET;
     address.sin_addr.s_addr = INADDR_ANY;
@@ -103,13 +83,11 @@ int init_server(int port_no) {
 
     if (bind(server_fd, (struct sockaddr *)&address, sizeof(address)) < 0) {
 		fprintf(stderr, "Socket initialization error in binding\n");
-        close(server_fd);
 		exit(1);
     }
 	if (listen(server_fd, 10) < 0) {
         fprintf(stderr, "Socket Initialization error in listening\n");
-        close(server_fd);
-        exit(1);
+		exit(1);
     }
 
     std::cout << "Server is listening on port " << port_no << std::endl;
